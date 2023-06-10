@@ -3,14 +3,36 @@ const { logger, customLogger } = require('../../middleware/logger');
 
 async function createProfile(request) {
     try {
-        const profile_img = request.profile_img;
-        const user_id = request.user_id;
+        console.log(request.body);
+        const imageFile = request.file;
 
-        const InsertSql = "INSERT INTO cl_user_profile(profile_img,user_id) VALUES (?,?)";
-        const [result] =  await conn.query(InsertSql, [profile_img, user_id]);
+        const env = require('dotenv').config().parsed;
+        const { CLOUD_NAME, API_KEY, API_SECRECT } = env;
+        // const cloudinary =require('../config/cloudinary').config;
+        const cloudinary = require('cloudinary').v2;
+        cloudinary.config({ cloud_name: CLOUD_NAME, api_key: API_KEY, api_secret: API_SECRECT });
+
+       
+        const cloudinaryImgUrl=await cloudinary.uploader.upload(imageFile.path, (error, result) => {
+            if (error) {
+              console.log('Upload error:', error);
+              res.status(500).json({ error: 'Failed to upload image'+JSON.stringify(error) });
+            }
+        });
+
+        const profile_img = cloudinaryImgUrl.url;
+        const user_id = request.body.user_id;
+
+        const InsertSql = "INSERT INTO cl_user_profile(profile_img, user_id, added_on) VALUES (?, ?, CURRENT_TIMESTAMP)";
+        const [result] = await conn.query(InsertSql, [profile_img, user_id]);
         if (result.affectedRows == 1) {
-            const checkCatgSql = "SELECT * FROM cl_user_profile WHERE user_id=?";
-            const [rows] =  await conn.query(checkCatgSql, [user_id]);
+            const checkCatgSql = `SELECT *
+            FROM cl_user_profile
+            WHERE user_id = ? and added_on is not null
+            ORDER BY added_on DESC
+            LIMIT 1
+            `;
+            const [rows] = await conn.query(checkCatgSql, [user_id]);
             if (rows.length > 0) {
                 const profile_img = rows[0].profile_img;
                 return { status: "success", message: "User profile updated successfully", profile_img: profile_img };
@@ -37,7 +59,7 @@ async function updateProfile(request) {
         const profile_img = request.about;
 
         const updateSql = "UPDATE cl_user_profile SET date_of_birth=?, education=?, about=?,profile_img=?";
-        const [result] =  await conn.query(updateSql, [date_of_birth, education, about, profile_img]);
+        const [result] = await conn.query(updateSql, [date_of_birth, education, about, profile_img]);
 
         if (result.affectedRows == 1) {
             return { status: "success", message: "Profile updated successfully" };
@@ -55,7 +77,7 @@ async function updateProfile(request) {
 async function readProfile(profileId) {
     try {
         const selectSql = "SELECT * FROM cl_user_profile WHERE profile_id = ?";
-        const [rows] =  await conn.query(selectSql, [profileId]);
+        const [rows] = await conn.query(selectSql, [profileId]);
 
         if (rows.length > 0) {
             const profile = rows[0];

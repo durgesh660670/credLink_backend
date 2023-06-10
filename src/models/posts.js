@@ -1,7 +1,7 @@
 const conn = require('../config/database');
 const create = async (reqObj)=>{
     try {
-        // console.log(reqObj)
+        console.log(reqObj)
         const { userId, postTitle,userPost,postCaption } = reqObj;
         const postArray = Object.values({ userId, postTitle,userPost,postCaption });
         const insertSql="insert into cl_post(user_id,post_title,user_post,post_caption) values (?,?,?,?)";

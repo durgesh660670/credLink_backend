@@ -3,8 +3,8 @@
 const profileModel = require('../models/profile');
 
 const create = async (req, res) => {
-    const create = req.body;
-    const result = profileModel.create(create);
+    console.log(req.body)
+    const result = profileModel.create(req);
     const resp = await result;
     res.send(resp);
 }

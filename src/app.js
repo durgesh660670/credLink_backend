@@ -6,6 +6,11 @@ const app        = express();
 const dbconnect  = require('./config/database');
 const postRoutes  = require('./routes/postRoute');
 const usrComments =require('./routes/commentsRoute')
+const authRoute = require('./routes/authRoute')
+const profileRoute = require('./routes/profileRoute')
+const likeRoute= require('./routes/likeRoute')
+const { logger2 } = require('../middleware/logger')
+app.use(logger2)
 
 app.use(cors());
 app.use(hemlet());
@@ -28,6 +33,9 @@ app.use(bodyParser.json())
 // })
 app.use('/postcl',postRoutes);
 app.use('/comments',usrComments);
+app.use('/user', authRoute);
+app.use('/profile', profileRoute);
+app.use('/like', likeRoute);
 // app.use('/postcl/:postId',postRoutes);
 
 app.use((req,res,next)=>{

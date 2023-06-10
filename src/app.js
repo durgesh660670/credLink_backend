@@ -4,7 +4,8 @@ const hemlet     = require('helmet');
 const express    = require('express');
 const app        = express();
 const dbconnect  = require('./config/database');
-const catgRoute  = require('./routes/categoryRoute');
+const postRoutes  = require('./routes/postRoute');
+const usrComments =require('./routes/commentsRoute')
 
 app.use(cors());
 app.use(hemlet());
@@ -13,19 +14,21 @@ app.use(bodyParser.json())
 // app.use('/api');
 
 //preventing CORS errors
-app.use((req,res,next)=>{
-    res.header("Access-Control-Allow-Origin","*")
-    res.header(
-        "Access-Control-Allow-Origin",
-        "origin,X-Requested-With,Content-Type,Accept,Authorization"
-    )
-    if(req.method==="OPTIONS"){
-        res.header('Access-Control-Allow-Methods','PUT,PATCH,POST,GET,DELETE')
-        return res.status(200).json({})
-    }
-    next()
-})
-app.use('/category',catgRoute);
+// app.use((req,res,next)=>{
+//     res.header("Access-Control-Allow-Origin","*")
+//     res.header(
+//         "Access-Control-Allow-Origin",
+//         "origin,X-Requested-With,Content-Type,Accept,Authorization"
+//     )
+//     if(req.method==="OPTIONS"){
+//         res.header('Access-Control-Allow-Methods','PUT,PATCH,POST,GET,DELETE')
+//         return res.status(200).json({})
+//     }
+//     next()
+// })
+app.use('/postcl',postRoutes);
+app.use('/comments',usrComments);
+// app.use('/postcl/:postId',postRoutes);
 
 app.use((req,res,next)=>{
     const error=new Error('Not found')

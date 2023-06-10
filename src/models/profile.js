@@ -7,10 +7,10 @@ async function createProfile(request) {
         const user_id = request.user_id;
 
         const InsertSql = "INSERT INTO cl_user_profile(profile_img,user_id) VALUES (?,?)";
-        const [result] = await conn.promise().query(InsertSql, [profile_img, user_id]);
+        const [result] =  await conn.query(InsertSql, [profile_img, user_id]);
         if (result.affectedRows == 1) {
             const checkCatgSql = "SELECT * FROM cl_user_profile WHERE user_id=?";
-            const [rows] = await conn.promise().query(checkCatgSql, [user_id]);
+            const [rows] =  await conn.query(checkCatgSql, [user_id]);
             if (rows.length > 0) {
                 const profile_img = rows[0].profile_img;
                 return { status: "success", message: "User profile updated successfully", profile_img: profile_img };
@@ -37,7 +37,7 @@ async function updateProfile(request) {
         const profile_img = request.about;
 
         const updateSql = "UPDATE cl_user_profile SET date_of_birth=?, education=?, about=?,profile_img=?";
-        const [result] = await conn.promise().query(updateSql, [date_of_birth, education, about, profile_img]);
+        const [result] =  await conn.query(updateSql, [date_of_birth, education, about, profile_img]);
 
         if (result.affectedRows == 1) {
             return { status: "success", message: "Profile updated successfully" };
@@ -55,7 +55,7 @@ async function updateProfile(request) {
 async function readProfile(profileId) {
     try {
         const selectSql = "SELECT * FROM cl_user_profile WHERE profile_id = ?";
-        const [rows] = await conn.promise().query(selectSql, [profileId]);
+        const [rows] =  await conn.query(selectSql, [profileId]);
 
         if (rows.length > 0) {
             const profile = rows[0];

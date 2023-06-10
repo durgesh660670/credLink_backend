@@ -9,7 +9,7 @@ async function createAuth(request) {
 
 
         const checkCatgSql = "SELECT * FROM cl_user WHERE email=?";
-        const [rows] = await conn.promise().query(checkCatgSql, [email]);
+        const [rows] = await conn.query(checkCatgSql, [email]);
 
         if (rows.length > 0) {
             const user_id = rows[0].user_id;
@@ -17,11 +17,11 @@ async function createAuth(request) {
         }
 
         const InsertSql = "INSERT INTO cl_user(f_name, l_name, email) VALUES (?, ?, ?)";
-        const [result] = await conn.promise().query(InsertSql, [f_name, l_name, email]);
+        const [result] = await conn.query(InsertSql, [f_name, l_name, email]);
 
         if (result.affectedRows === 1) {
             const checkCatgSql = "SELECT * FROM cl_user WHERE email=?";
-            const [rows] = await conn.promise().query(checkCatgSql, [email]);
+            const [rows] = await conn.query(checkCatgSql, [email]);
 
             if (rows.length > 0) {
                 const user_id = rows[0].user_id;
@@ -43,9 +43,9 @@ async function readAuth(user_id) {
     try {
         const checkCatgSql = `SELECT u.f_name, u.l_name, u.email, p.profile_img FROM cl_user u
         LEFT OUTER JOIN cl_user_profile p ON u.user_id = p.user_id
-        WHERE u.user_id = 20`;
+        WHERE u.user_id = ?`;
 
-        const [rows] = await conn.promise().query(checkCatgSql, [user_id]);
+        const [rows] = await conn.query(checkCatgSql, [user_id]);
 
         if (rows.length > 0) {
             const user_id = rows[0].user_id;

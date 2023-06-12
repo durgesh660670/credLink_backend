@@ -5,24 +5,11 @@ const create = async (req, res) => {
     const resp = await result;
     res.send(resp);
 }
-const update = async (req, res) => {
-    const update = req.body;
-    const result = likeModel.update(update);
-    const resp = await result;
-    res.send(resp);
+
+const userReactions = async (req, res) => {
+    const result = await likeModel.getUserReaction();
+    res.send(result);
 }
 
 
-const read = async (req, res) => {
-    const profileId = req.params.id;
-    const result = profileModel.read(profileId);
-    const resp = await result;
-    res.send(resp);
-}
-
-
-module.exports = {
-    create: create,
-    update: update,
-    read: read
-}
+module.exports = {create: create,read: userReactions}

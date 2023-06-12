@@ -1,12 +1,19 @@
 const conn = require('../config/database');
 const { customLogger } = require('../../middleware/logger');
 
-async function createLike(postId, userId, userReaction, req) {
+async function createLike(reqObj) {
     try {
-        const createdOn = req.created_on || new Date().toISOString();
-        const insertSql = "INSERT INTO cl_likes (post_id, user_id, user_reaction, created_on) VALUES (?, ?, ?, ?)";
-        const [result] = await conn.query(insertSql, [postId, userId, userReaction, createdOn]);
 
+        const selectSql = "SELECT * FROM cl_likes WHERE post_id = ?";
+        const [likerows] = await conn.query(selectSql, [reqObj.postId,reqObj.userId]);
+        if(likerows.length>0){
+            const delQuery="delete from cl_likes where user_id=? and post_id=?";
+            await conn.query(delQuery,[reqObj.userId,reqObj.postId]);
+        }
+        const {postId, userId, userReaction } = reqObj;
+        const likeArray=Object.values({postId, userId, userReaction })
+        const insertSql = "INSERT INTO cl_likes (post_id, user_id, user_reaction) VALUES (?, ?, ?)";
+        const [result] = await conn.query(insertSql,likeArray);
         if (result.affectedRows == 1) {
             return { status: "success", message: "Like created successfully" };
         } else {
@@ -19,29 +26,11 @@ async function createLike(postId, userId, userReaction, req) {
     }
 }
 
-async function updateLike(likeId, userReaction, req) {
-    try {
-        const modifiedOn = req.modified_on || new Date().toISOString();
 
-        const updateSql = "UPDATE cl_likes SET user_reaction = ?, modified_on = ? WHERE like_id = ?";
-        const [result] = await conn.promise().query(updateSql, [userReaction, modifiedOn, likeId]);
-
-        if (result.affectedRows == 1) {
-            return { status: "success", message: "Like updated successfully" };
-        } else {
-            return { status: "unsuccess", message: "Could not update like, something went wrong" };
-        }
-    } catch (error) {
-        // Log the error stack trace
-        customLogger.info('Error in updateLike: ' + error.stack);
-        return { status: "error", message: "An error occurred while updating the like" };
-    }
-}
-
-async function readLike(likeId) {
+async function getUserReaction(likeId) {
   try {
     const selectSql = "SELECT * FROM cl_likes WHERE like_id = ?";
-    const [rows] = await conn.promise().query(selectSql, [likeId]);
+    const [rows] = await conn.query(selectSql, [likeId]);
 
     if (rows.length > 0) {
       const like = rows[0];
@@ -58,7 +47,6 @@ async function readLike(likeId) {
 
 
 module.exports = {
-    update: updateLike,
     userReaction: createLike,
-    read:readLike
+    getUserReaction:getUserReaction
 };

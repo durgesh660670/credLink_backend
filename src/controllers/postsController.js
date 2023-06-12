@@ -5,9 +5,13 @@ const {CLOUD_NAME, API_KEY, API_SECRECT } = env;
 const cloudinary = require('cloudinary').v2;
 cloudinary.config({cloud_name:CLOUD_NAME,api_key:API_KEY,api_secret:API_SECRECT});
 const publishPost = async (req,res,next)=>{
+    if(!req.body || req.body.post_title=="" || req.file=="")
+        res.send({status:"unsuccess",message:"Insufficient parameters in request."});
+
     postsObj={};
     const {user_id,post_title,post_caption}=req.body;
     const imageFile = req.file;
+
     const cloudinaryImgUrl=await cloudinary.uploader.upload(imageFile.path, (error, result) => {
         if (error) {
           console.log('Upload error:', error);

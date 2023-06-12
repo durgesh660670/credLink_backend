@@ -1,6 +1,9 @@
 const comments=require('../models/comments');
 
 const publishComments =async (req,res)=>{
+    if(!req.body || req.body.comment=="")
+         res.send({status:"unsuccess",message:"Please enter comment in description box."});
+
     const reqObj =req.body;
     const resp=await comments.saveComments(reqObj);
     res.send(resp);

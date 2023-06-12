@@ -4,10 +4,8 @@ const { customLogger } = require('../../middleware/logger');
 async function createLike(postId, userId, userReaction, req) {
     try {
         const createdOn = req.created_on || new Date().toISOString();
-
-        
         const insertSql = "INSERT INTO cl_likes (post_id, user_id, user_reaction, created_on) VALUES (?, ?, ?, ?)";
-        const [result] = await conn.promise().query(insertSql, [postId, userId, userReaction, createdOn]);
+        const [result] = await conn.query(insertSql, [postId, userId, userReaction, createdOn]);
 
         if (result.affectedRows == 1) {
             return { status: "success", message: "Like created successfully" };
@@ -61,6 +59,6 @@ async function readLike(likeId) {
 
 module.exports = {
     update: updateLike,
-    create: createLike,
+    userReaction: createLike,
     read:readLike
 };

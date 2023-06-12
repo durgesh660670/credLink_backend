@@ -1,14 +1,13 @@
 const likeModel = require('../models/like');
-
 const create = async (req, res) => {
-    const create = req.body;
-    const result = profileModel.create(create);
+    const reqObj = req.body;
+    const result = likeModel.userReaction(reqObj);
     const resp = await result;
     res.send(resp);
 }
 const update = async (req, res) => {
     const update = req.body;
-    const result = profileModel.update(update);
+    const result = likeModel.update(update);
     const resp = await result;
     res.send(resp);
 }

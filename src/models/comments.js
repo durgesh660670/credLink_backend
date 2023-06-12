@@ -20,7 +20,7 @@ const save =async (reqObj)=>{
 }
 const read = async (postId)=>{
     try {
-        const selectQuery="SELECT c.* , u.user_id,CONCAT(u.f_name,' ',u.l_name) as user_name FROM cl_comments c LEFT JOIN cl_user u ON  c.user_id=u.user_id WHERE c.post_id=? order by created_on desc";
+        const selectQuery="SELECT c.* , u.user_id,CONCAT(u.f_name,' ',u.l_name) as user_name FROM cl_comments c LEFT JOIN cl_user u ON  c.user_id=u.user_id WHERE c.post_id=? order by created_on asc";
         const [rows]=await conn.query(selectQuery,[postId]);
         if(rows.length>0){
             return {status:"success",message:"User comments found",data:rows};

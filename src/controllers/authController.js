@@ -15,7 +15,12 @@ const read = async (req, res) => {
     const resp = await result;
     res.send(resp);
 }
+const getAllusers=async()=>{
+    const uesrs=await authModel.geCLUsers();
+    res.send(uesrs);
+}
 module.exports = {
     signUp: signUp,
-    read: read
+    read: read,
+    list:getAllusers
 }
